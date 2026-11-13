@@ -1,0 +1,10 @@
+import {readFile,mkdir,writeFile,copyFile} from 'node:fs/promises';
+const html=await readFile('src/index.html','utf8');
+const css=await readFile('src/style.css','utf8');
+const js=await readFile('src/app.js','utf8');
+const server=await readFile('src/server.js','utf8');
+const places=JSON.parse(await readFile('src/places.json','utf8'));
+await mkdir('dist/server',{recursive:true});await mkdir('dist/.openai',{recursive:true});
+await writeFile('dist/server/index.js',`const PLACES=${JSON.stringify(places)};\nconst ASSETS=${JSON.stringify({'/':{body:html,type:'text/html; charset=utf-8'},'/style.css':{body:css,type:'text/css; charset=utf-8'},'/app.js':{body:js,type:'text/javascript; charset=utf-8'}})};\n${server}`);
+await copyFile('.openai/hosting.json','dist/.openai/hosting.json');
+console.log('Built Worker and three embedded assets.');
